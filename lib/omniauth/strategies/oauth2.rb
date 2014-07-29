@@ -66,6 +66,7 @@ module OmniAuth
       end
 
       def callback_phase # rubocop:disable CyclomaticComplexity
+        puts "oauth2 callback: #{request.inspect}"
         error = request.params['error_reason'] || request.params['error']
         if error
           fail!(error, CallbackError.new(request.params['error'], request.params['error_description'] || request.params['error_reason'], request.params['error_uri']))
