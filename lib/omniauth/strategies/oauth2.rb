@@ -66,11 +66,20 @@ module OmniAuth
       end
 
       def callback_phase # rubocop:disable CyclomaticComplexity
-        puts "oauth2 callback: #{request.inspect}"
+        puts "[oauth2] callback: #{request.inspect}"
         error = request.params['error_reason'] || request.params['error']
+
+        state = request.params['state']
+        state_from_session = session.delete('omniauth.state')
+
+        puts "[oauth2] state: #{state}"
+        puts "[oauth2] state_from_session: #{state_from_session}"
+        is_csrf = !options.provider_ignores_state && (state.to_s.empty? || state != state_from_session)
+        puts "[oauth2] is_csrf: #{is_csrf}"
+
         if error
           fail!(error, CallbackError.new(request.params['error'], request.params['error_description'] || request.params['error_reason'], request.params['error_uri']))
-        elsif !options.provider_ignores_state && (request.params['state'].to_s.empty? || request.params['state'] != session.delete('omniauth.state'))
+        elsif is_csrf
           fail!(:csrf_detected, CallbackError.new(:csrf_detected, 'CSRF detected'))
         else
           self.access_token = build_access_token
