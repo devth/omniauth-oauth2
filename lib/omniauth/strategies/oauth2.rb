@@ -58,6 +58,7 @@ module OmniAuth
           @env['rack.session'] ||= {}
         end
         session['omniauth.state'] = params[:state]
+        Rails.logger.info "[oauth2] set state #{session['omniauth.state']}"
         params
       end
 
