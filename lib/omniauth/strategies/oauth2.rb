@@ -67,16 +67,15 @@ module OmniAuth
       end
 
       def callback_phase # rubocop:disable CyclomaticComplexity
-        puts "[oauth2] callback: #{request.inspect}"
+        Rails.logger.info "[oauth2] callback: #{request.inspect}"
         error = request.params['error_reason'] || request.params['error']
 
         state = request.params['state']
         state_from_session = session.delete('omniauth.state')
 
-        puts "[oauth2] state: #{state}"
-        puts "[oauth2] state_from_session: #{state_from_session}"
+        Rails.logger.info "[oauth2] state: #{state}. state_from_session: #{state_from_session}"
         is_csrf = !options.provider_ignores_state && (state.to_s.empty? || state != state_from_session)
-        puts "[oauth2] is_csrf: #{is_csrf}"
+        Rails.logger.info "[oauth2] is_csrf: #{is_csrf}"
 
         if error
           fail!(error, CallbackError.new(request.params['error'], request.params['error_description'] || request.params['error_reason'], request.params['error_uri']))
