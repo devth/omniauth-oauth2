@@ -47,6 +47,7 @@ module OmniAuth
       end
 
       def request_phase
+        Rails.logger.info "[oauth2] request_phase redirect"
         redirect client.auth_code.authorize_url({:redirect_uri => callback_url}.merge(authorize_params))
       end
 
@@ -100,6 +101,7 @@ module OmniAuth
 
       def build_access_token
         verifier = request.params['code']
+        Rails.logger.info "[oauth2] build_access_token"
         client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
       end
 
